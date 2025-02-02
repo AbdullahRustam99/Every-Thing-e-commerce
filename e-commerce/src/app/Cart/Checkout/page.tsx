@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { v4 as uuidv4 } from "uuid";
 
-export const formSchema = z.object({
+ const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   address1: z.string().min(1, "Address is required"),

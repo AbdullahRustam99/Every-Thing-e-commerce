@@ -136,7 +136,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                 className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
                 onClick={() => {
                   if (quantity === 0) {
-                    warning(productItem.productName);
+                    warning();
                   } else {
                     addToCart({ ...productItem }, quantity);
                     notify(productItem.productName);
