@@ -5,7 +5,6 @@ import Footer from "@/components/Footer";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { BiCart } from "react-icons/bi";
-import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import { useCart } from "@/app/Context/createContext";
 import { ToastContainer, toast } from "react-toastify";
@@ -62,7 +61,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
       type: "error",
     });
   };
-  const warning = (productName: string) => {
+  const warning = () => {
     toast(`Please select quantity`, {
       type: "warning",
     });
