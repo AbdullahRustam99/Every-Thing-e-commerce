@@ -7,7 +7,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-3xl font-bold text-gray-800">
-              eCommerce Dashboard
+              Every Thing Admin Dashboard
             </h1>
             <div className="flex space-x-4">
               <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg">

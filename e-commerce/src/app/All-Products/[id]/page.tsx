@@ -9,6 +9,8 @@ import { client } from "@/sanity/lib/client";
 import { useCart } from "@/app/Context/createContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
+
 interface Product {
   _id: number;
   productName: string;
@@ -35,7 +37,7 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   "imageUrl": image.asset->url,
   description
 }`;
-
+const router = useRouter()
   const [productData, setProductData] = useState<Product[]>([]);
   useEffect(() => {
     async function fetchData() {
@@ -61,8 +63,8 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
       type: "error",
     });
   };
-  const warning = () => {
-    toast(`Please select quantity`, {
+  const warning = (productName: string) => {
+    toast(`${productName} Please select quantity`, {
       type: "warning",
     });
   };
@@ -136,8 +138,9 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                 className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
                 onClick={() => {
                   if (quantity === 0) {
-                    warning();
+                    warning(productItem.productName);
                   } else {
+                    router.push("/All-Products")
                     addToCart({ ...productItem }, quantity);
                     notify(productItem.productName);
                   }

@@ -21,8 +21,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { v4 as uuidv4 } from "uuid";
+import { useRouter } from "next/navigation";
 
- const formSchema = z.object({
+const formSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   address1: z.string().min(1, "Address is required"),
@@ -35,7 +36,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const OrderForm = () => {
   const { cart, removeFromCart } = useCart();
-
+  const router = useRouter();
   useEffect(() => {
     console.log("Cart contents:", cart);
   }, [cart]);
@@ -78,8 +79,9 @@ const OrderForm = () => {
         _type: "orderDetails",
         ...data,
       });
+      router.push("/All-Products");
       console.log("Order Submitted:", response);
-      toast("Order placed successfully!", { type: "success", autoClose: 1000});
+      toast("Order placed successfully!", { type: "success", autoClose: 1000 });
     } catch (error) {
       console.log("Error submitting order:", error);
       toast("Failed to submit order.", { type: "error", autoClose: 1000 });
