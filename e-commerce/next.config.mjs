@@ -8,6 +8,9 @@ const nextConfig = {
       },
     ],
   },
+   experimental: {
+    middlewareHeaders: true,  
+  },
 };
 
 export default nextConfig;

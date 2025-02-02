@@ -1,5 +1,5 @@
 "use client"
-import React from "react";
+import React, { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer"
 import Logo from "@/img/logo.png";
@@ -12,12 +12,12 @@ import {
   Form,
   FormField,
   FormItem,
-  
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import router from "next/router";
+
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -26,25 +26,47 @@ const formSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters long" }),
   firstName: z.string().nonempty({ message: "First Name is required" }),
   lastName: z.string().nonempty({ message: "Last Name is required" }),
-  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+  dob: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, {
     message: "Date of Birth must be in the format YYYY-MM-DD",
   }),
   gender: z.enum(["male", "female"], { message: "Gender is required" }),
   emailUpdates: z.boolean().optional(),
 });
 
-
 const NikeMember = () => {
+    const [error ,seterror] = useState("")
+  
   const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
     });
   
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      console.log(values);
-    }
+    async function onSubmit(data: z.infer<typeof formSchema>) {
+       try {
+         const api = await fetch("/api/Auth/Singup", {
+           method: "Post",
+           headers: {
+             "Content-Type": "application/json",
+           },
+           body: JSON.stringify(data),
+           credentials: "include",
+         });
+   
+         if (api.ok) {
+           console.log("hellow")
+           router.push("/")
+         } else {
+           const response = await api.json();
+           seterror(response)
+           console.log(response);
+         }
+       } catch (error) {
+         console.log(error, "Error");
+       }
+     }
   return (
     <>
       <Header />
+
       <div className="flex justify-center items-center">
         <div className="px10 flex justify-center items-center flex-col text-center gap-2 md:max-w-[380px] px-5 my-5">
           <Image src={Logo} alt="logo" />
@@ -172,12 +194,13 @@ const NikeMember = () => {
                   </FormItem>
                 )}
               />
-              <Button
+              <h1 className=" text-red-700">{error}</h1>
+              <button
                 className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
                 type="submit"
               >
                 Submit
-              </Button>
+              </button>
             </form>
           </Form>
         

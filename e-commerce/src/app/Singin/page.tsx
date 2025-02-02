@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react";
+import React, { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Logo from "@/img/logo.png";
@@ -13,12 +13,12 @@ import {
   Form,
   FormField,
   FormItem,
-  
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -28,14 +28,34 @@ const formSchema = z.object({
 });
 
 const Login = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+  const [error ,seterror] = useState("")
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+   async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      const api = await fetch("/api/Auth/Login", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (api.ok) {
+        console.log("hellow")
+        router.push("/")
+      } else {
+        const response = await api.json();
+        seterror(response)
+        console.log(response);
+      }
+    } catch (error) {
+      console.log(error, "Error");
+    }
   }
-
   return (
     <>
       <Header />
@@ -82,6 +102,7 @@ const Login = () => {
                   </FormItem>
                 )}
               />
+              <h1 className="text-red-700">{ error}</h1>
               <Button
                 className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
                 type="submit"

@@ -8,10 +8,41 @@ import { PiPackage } from "react-icons/pi";
 import { urlFor } from "@/sanity/lib/image";
 import { Trash } from "lucide-react";
 import { client } from "@/sanity/lib/client";
+import { ToastContainer, toast } from "react-toastify";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { v4 as uuidv4 } from "uuid";
+
+export const formSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  address1: z.string().min(1, "Address is required"),
+  address2: z.string().optional(),
+  postalcode: z.string().min(1, "Postal code is required").max(6),
+  locality: z.string().min(1, "Locality is required"),
+  email: z.string().email("Invalid email address"),
+  phone: z.string().regex(/^\+?[0-9]{7,15}$/, "Invalid phone number"),
+});
 
 const OrderForm = () => {
   const { cart, removeFromCart } = useCart();
+
+  useEffect(() => {
+    console.log("Cart contents:", cart);
+  }, [cart]);
   const [sum, setSum] = useState(0);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+  });
 
   useEffect(() => {
     const total = cart.reduce(
@@ -22,45 +53,37 @@ const OrderForm = () => {
     setSum(total);
   }, [cart]);
 
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    address1: "",
-    address2: "",
-    postalcode: "",
-    locality: "",
-    email: "",
-    phone: "",
-    pan: "",
-  });
-const submit = async () => {
-    const data = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      address1: formData.address1,
-      address2: formData.address2,
-      postalcode: formData.postalcode,
-      locality: formData.locality,
-      email: formData.email,
-      phone: formData.phone,
-      pan: formData.pan,
-    };
-    const responce = await client.create({
-      _type: "formSubmission",
-      ...data,
-    });
-    console.log(responce);
-    setFormData({
-      firstName: "",
-      lastName: "",
-      address1: "",
-      address2: "",
-      postalcode: "",
-      locality: "",
-      email: "",
-      phone: "",
-      pan: "",
-    });
+  const submit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const data = {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        address1: values.address1,
+        postalcode: values.postalcode,
+        locality: values.locality,
+        email: values.email,
+        phone: values.phone,
+        address2: values.address2,
+        cart: cart.map((item) => ({
+          _key: uuidv4(),
+          productId: item._id,
+          productName: item.productName,
+          productQuantity: item.quantity,
+          price: item.price,
+        })),
+        sum,
+      };
+
+      const response = await client.create({
+        _type: "orderDetails",
+        ...data,
+      });
+      console.log("Order Submitted:", response);
+      toast("Order placed successfully!", { type: "success", autoClose: 1000});
+    } catch (error) {
+      console.log("Error submitting order:", error);
+      toast("Failed to submit order.", { type: "error", autoClose: 1000 });
+    }
   };
 
   return (
@@ -86,163 +109,190 @@ const submit = async () => {
                 information. Learn More
               </p>
             </div>
-
-            <form className="flex flex-col gap-5 mb-5 max-w-[295px] md:max-w-[440px]">
-              <div className="flex  items-center border-2 border-black p-5 gap-4 rounded-xl">
-                <PiPackage size={25} />
-                <p className="text-[16px] font-medium ">Deliver It</p>
-              </div>
-
-              <h1 className="font-medium text-[17px]">
-                Enter your name and address:
-              </h1>
-              <div>
-                <input
-                  placeholder="First Name"
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({ ...formData, firstName: e.target.value })
-                  }
-                  value={formData.firstName}
-                  className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({ ...formData, lastName: e.target.value })
-                  }
-                  value={formData.lastName}
-                  placeholder="Last Name"
-                  className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-
-              <div>
-                <input
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({ ...formData, address1: e.target.value })
-                  }
-                  value={formData.address1}
-                  placeholder="Address1"
-                  className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div>
-                <input
-                  type="text"
-                  onChange={(e) =>
-                    setFormData({ ...formData, address2: e.target.value })
-                  }
-                  value={formData.address2}
-                  placeholder="Address2"
-                  className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                />
-              </div>
-              <div className="flex justify-between">
-                <div>
-                  <input
-                    type="text"
-                    onChange={(e) =>
-                      setFormData({ ...formData, postalcode: e.target.value })
-                    }
-                    value={formData.postalcode}
-                    placeholder="Postal Code"
-                    className=" w-[85%] border border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                </div>
-                <div>
-                  <input
-                    type="text"
-                    onChange={(e) =>
-                      setFormData({ ...formData, locality: e.target.value })
-                    }
-                    value={formData.locality}
-                    placeholder="Locality"
-                    className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <h1 className="font-medium text-[16px]">
-                  Whats your contact information?
-                </h1>
-                <div>
-                  <input
-                    type="email"
-                    placeholder="E-mail"
-                    className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                  <p className="text-[11px] ml-2 mt-1 text-[#757575]">
-                    A confirmation email will be sent after checkout.
-                  </p>
-                </div>
-                <div>
-                  <input
-                    type="tel"
-                    placeholder="Phone"
-                    className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                  <p className="text-[11px] ml-2 mt-1 text-[#757575]">
-                    A carrier might contact you to confirm delivery.
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col gap-3">
-                <h1 className="font-medium text-[16px]">Whats your PAN?</h1>
-
-                <div>
-                  <input
-                    type="text"
-                    onChange={(e) =>
-                      setFormData({ ...formData, pan: e.target.value })
-                    }
-                    value={formData.pan}
-                    placeholder="PAN"
-                    className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                </div>
-                <p className="text-[11px] ml-2 mt-1 text-[#757575]">
-                  Enter your PAN to enable payment with UPI, Net Banking or
-                  local card methods
-                </p>
-                <div className="flex justify-start gap-2">
-                  <input
-                    type="checkbox"
-                    placeholder="Phone"
-                    className="  border border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                  <p className="text-[11px] ml-2 mt-1 text-[#757575]">
-                    Save PAN details to Nike Profile
-                  </p>
-                </div>
-                <div className="flex justify-start gap-2">
-                  <input
-                    type="checkbox"
-                    placeholder="Phone"
-                    className="  border border-gray-300 rounded-md shadow-sm p-2"
-                  />
-                  <p className="text-[11px] ml-2 mt-1 text-[#757575]">
-                    I have read and consent to eShopWorld processing my
-                    information in accordance with the{" "}
-                    <span className="underline">Privacy Statement</span> and
-                    <span className="underline">Cookie Policy</span>. eShopWorld
-                    is a trusted Nike partner.
-                  </p>
-                </div>
-              </div>
-            </form>
-            <div>
-              <button
-                onClick={submit}
-                className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(submit)}
+                className="flex flex-col gap-5 mb-5 max-w-[295px] md:max-w-[440px]"
               >
-                Oder Now
-              </button>
-            </div>
+                <div className="flex  items-center border-2 border-black p-5 gap-4 rounded-xl">
+                  <PiPackage size={25} />
+                  <p className="text-[16px] font-medium ">Deliver It</p>
+                </div>
+
+                <h1 className="font-medium text-[17px]">
+                  Enter your name and address:
+                </h1>
+
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="First Name"
+                          type="text"
+                          {...field}
+                          className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="Last Name"
+                          type="text"
+                          {...field}
+                          className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="address1"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="Address1"
+                          type="text"
+                          {...field}
+                          className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="address2"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormControl>
+                        <Input
+                          placeholder="Address2"
+                          type="text"
+                          {...field}
+                          className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <div className="flex justify-between">
+                  <FormField
+                    control={form.control}
+                    name="postalcode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Postal Code"
+                            type="text"
+                            {...field}
+                            className=" w-[85%] border border-gray-300 rounded-md shadow-sm p-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="locality"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Locality"
+                            type="text"
+                            {...field}
+                            className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <h1 className="font-medium text-[16px]">
+                    Whats your contact information?
+                  </h1>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="E-mail"
+                            type="text"
+                            {...field}
+                            className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            placeholder="Phone"
+                            type="tel"
+                            {...field}
+                            className=" w-full border border-gray-300 rounded-md shadow-sm p-2"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex justify-start gap-2">
+                    <input
+                      type="checkbox"
+                      placeholder="Phone"
+                      className="  border border-gray-300 rounded-md shadow-sm p-2"
+                    />
+                    <p className="text-[11px] ml-2 mt-1 text-[#757575]">
+                      I have read and consent to eShopWorld processing my
+                      information in accordance with the{" "}
+                      <span className="underline">Privacy Statement</span> and
+                      <span className="underline">Cookie Policy</span>.
+                      eShopWorld is a trusted Nike partner.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
+                >
+                  Order Now
+                </button>
+              </form>
+            </Form>
             <div className="flex flex-col gap-3">
               <div className="border-t-2 py-1 my-2 text-[20px] ">Delivery</div>
               <div className="border-t-2 py-1 my-2 text-[20px] text-[#757575]">
@@ -297,7 +347,7 @@ const submit = async () => {
                               src={urlFor(item.imageUrl).url()}
                               width={160}
                               height={160}
-                              alt="Me n"
+                              alt="Men"
                             />
                           </div>
                           <div className=" gap-3">
@@ -321,6 +371,7 @@ const submit = async () => {
             </div>
           </div>
         </div>
+        <ToastContainer position="bottom-right" />
       </div>
       <Footer />
     </>

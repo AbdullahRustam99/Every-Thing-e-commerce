@@ -8,6 +8,8 @@ import Featured from "@/components/Featured";
 import Dontmiss from "@/components/Dontmiss";
 import Gearup from "@/components/Gearup";
 import Essiental from "@/components/Essiental";
+import { ToastContainer } from "react-toastify";
+
 const Home = () => {
   return (
     <>
@@ -19,6 +21,7 @@ const Home = () => {
       <Dontmiss />
       <Essiental />
       <Footer />
+      <ToastContainer position="bottom-right" />
     </>
   );
 };

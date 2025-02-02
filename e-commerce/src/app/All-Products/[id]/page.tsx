@@ -8,6 +8,8 @@ import { BiCart } from "react-icons/bi";
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 import { useCart } from "@/app/Context/createContext";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 interface Product {
   _id: number;
   productName: string;
@@ -34,9 +36,8 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   "imageUrl": image.asset->url,
   description
 }`;
-  
-  const [productData, setProductData] = useState<Product[]>([]);
 
+  const [productData, setProductData] = useState<Product[]>([]);
   useEffect(() => {
     async function fetchData() {
       const product = await client.fetch(api);
@@ -44,16 +45,43 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
     }
     fetchData();
   }, []);
-  
+
   const [quantity, setquantity] = useState(0);
 
-  const productItem = productData.find((item: Product) => String(item._id) === String(id));
+  const productItem = productData.find(
+    (item: Product) => String(item._id) === String(id)
+  );
   console.log(productItem);
+  const notify = (productName: string) => {
+    toast(`${productName} added to cart sucessfully`, {
+      type: "success",
+    });
+  };
+  const outOfStock = (productName: string) => {
+    toast(`${productName} is out of stock`, {
+      type: "error",
+    });
+  };
+  const warning = (productName: string) => {
+    toast(`Please select quantity`, {
+      type: "warning",
+    });
+  };
+  if (!productItem) {
+    return (
+      <>
+        <Header />
+        <div className="px-10 py-10 flex gap-10 md:gap-20 md:py-20 items-center justify-center flex-col lg:flex-row">
+          <p className="text-4xl text-center text-gray-500">Loading...!</p>;
+        </div>
+        <Footer />
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Header />
 
-  return (
-    <>
-      <Header />
-      {productItem ? (
         <div className="px-10 py-10 flex gap-10 md:gap-20 md:py-20 items-center justify-center flex-col lg:flex-row">
           <div>
             <Image
@@ -75,35 +103,59 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
                 $ {productItem.price}
               </p>
               <div className="flex justify-center items-center gap-0 mr-20">
-                <button onClick={() => setquantity(quantity - 1)} className=" bg-black rounded-md cursor-pointer text-white p-2">
+                <button
+                  onClick={() => {
+                    if (quantity <= 0) {
+                      setquantity(0);
+                    } else {
+                      setquantity(quantity - 1);
+                    }
+                  }}
+                  className=" bg-black rounded-md cursor-pointer text-white p-2"
+                >
                   -
                 </button>
                 <p className=" border-2 border-black px-5 py-1 ">{quantity}</p>
-                <button onClick={() => setquantity(quantity + 1)} className=" bg-black rounded-md cursor-pointer text-white p-2">
+                <button
+                  onClick={() => {
+                    if (quantity > productItem.inventory) {
+                      outOfStock(productItem.productName);
+                    } else {
+                      setquantity(quantity + 1);
+                    }
+                  }}
+                  className=" bg-black rounded-md cursor-pointer text-white p-2"
+                >
                   +
                 </button>
               </div>
             </div>
             <div className="flex items-center bg-black rounded-[200px] cursor-pointer text-white pl-3 w-44">
               <BiCart size={25} className="" />
-              <Link href={"/Cart"}>
-                <button
-                  className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
-                  onClick={() => addToCart({ ...productItem }, quantity)}
-                >
-                  Add to Cart
-                </button>
-              </Link>
+
+              <button
+                className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
+                onClick={() => {
+                  if (quantity === 0) {
+                    warning(productItem.productName);
+                  } else {
+                    addToCart({ ...productItem }, quantity);
+                    notify(productItem.productName);
+                  }
+                }}
+              >
+                Add to Cart
+              </button>
             </div>
+            <ToastContainer position="bottom-right"/>
           </div>
         </div>
-      ) : (
-        <p className="text-4xl text-center pt-28 ">Loading...</p>
-      )}
 
-      <Footer />
-    </>
-  );
+        <Footer />
+      </>
+    );
+  }
 };
-
 export default ProductDetails;
+
+// function toast removed to resolve import conflict

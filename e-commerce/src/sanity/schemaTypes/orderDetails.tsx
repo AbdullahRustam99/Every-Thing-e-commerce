@@ -1,6 +1,6 @@
 export const orderDetails = {
-  name: "formSubmission",
-  title: "Form Submission",
+  name: "orderDetails",
+  title: "Order Deatils",
   type: "document",
   fields: [
     {
@@ -44,9 +44,41 @@ export const orderDetails = {
       type: "string",
     },
     {
-      name: "pan",
-      title: "PAN",
-      type: "string",
+      name: "cart",
+      title: "Items",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            {
+              name: "productId",
+              title: "Product ID",
+              type: "string",
+            },
+            {
+              name: "productName",
+              title: "Product Name",
+              type: "string",
+            },
+            {
+              name: "productQuantity",
+              title: "Quantity",
+              type: "number",
+            },
+            {
+              name: "price",
+              title: "Price",
+              type: "number",
+            },
+          ],
+        },
+      ],
+    },
+    {
+      name: "sum",
+      title: "Total Price",
+      type: "number",
     },
   ],
 };
