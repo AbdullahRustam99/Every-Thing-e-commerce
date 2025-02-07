@@ -127,7 +127,7 @@ const ProductOrderDetalis = () => {
                       </tr>
                       {toggleRow === item._id &&
                         item.cart.map((product) => (
-                          <tr className="bg-gray-50 h-20 overflow-y-scroll">
+                          <tr key={item._id} className="bg-gray-50 h-20 overflow-y-scroll">
                             <td colSpan={6} className="p-4 text-gray-600">
                               <div
                                 className="flex items-center space-x-4 border-b py-2"
