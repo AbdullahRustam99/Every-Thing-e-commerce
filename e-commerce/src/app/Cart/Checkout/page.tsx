@@ -71,6 +71,7 @@ const OrderForm = () => {
           productName: item.productName,
           productQuantity: item.quantity,
           price: item.price,
+          Image: item.imageUrl
         })),
         sum,
       };
