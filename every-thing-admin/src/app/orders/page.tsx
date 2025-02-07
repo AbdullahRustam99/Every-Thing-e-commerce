@@ -4,7 +4,24 @@ import Header from "@/components/Header";
 import { client } from "@/sanity/lib/client";
 
 const ProductOrderDetalis = () => {
-  const [order, setOrder] = useState([]);
+  interface Order {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    sum: number;
+    cart: {
+      productId: string;
+      productName: string;
+      productQuantity: number;
+      price: number;
+      image: string;
+    }[];
+    _createdAt: string;
+  }
+
+  const [order, setOrder] = useState<Order[]>([]);
   const [toggleRow, settoggleRow] = useState<string | null>(null);
   const api = `*[_type == "orderDetails"]{
   _id,
@@ -50,10 +67,10 @@ const ProductOrderDetalis = () => {
           <div className="flex justify-between items-center my-4">
             <div className="flex space-x-4">
               <select className="border px-3 py-2 rounded-lg text-gray-600">
-                <option>Show All</option>
-                <option>Pending</option>
-                <option>Confirmed</option>
-                <option>Shipped</option>
+                <option key="show-all">Show All</option>
+                <option key="pending">Pending</option>
+                <option key="confirmed">Confirmed</option>
+                <option key="shipped">Shipped</option>
               </select>
             </div>
             <input

@@ -4,8 +4,19 @@ import Header from "@/components/Header";
 import { client } from "@/sanity/lib/client";
 
 
-const customers = () => {
-  const [order, setOrder] = useState([]);
+const Customers = () => {
+  interface OrderDetails {
+    firstName: string;
+    lastName: string;
+    address1: string;
+    address2?: string;
+    postalcode: string;
+    locality: string;
+    email: string;
+    phone: string;
+  }
+
+  const [order, setOrder] = useState<OrderDetails[]>([]);
   const api = `*[_type == "orderDetails"] {
   firstName,
   lastName,
@@ -26,9 +37,6 @@ const customers = () => {
     fetchData();
   }, []);
   console.log(order);
-  const toggel = () => {
-    return;
-  };
 
   return (
     <>
@@ -90,4 +98,4 @@ const customers = () => {
   );
 };
 
-export default customers;
+export default Customers;

@@ -43,9 +43,7 @@ const Product = () => {
     fetchData();
   }, []);
   console.log(Products);
-  const toggel = () => {
-    return;
-  };
+ 
 
   const delet = async (productId: string) => {
     try {
@@ -54,7 +52,8 @@ const Product = () => {
         return items.filter((item) => item._id !== productId);
       })
 toast(`Product Deleted `,{type:"success"})
-    }catch (error){
+    } catch (error) {
+      console.log(error)
 toast(`Faile to delete`,{type:"error"})
     }
   };
