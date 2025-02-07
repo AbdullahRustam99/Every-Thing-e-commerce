@@ -91,11 +91,11 @@ const ProductOrderDetalis = () => {
                   <th className="py-3 text-left text-gray-600">STATUS</th>
                 </tr>
               </thead>
-              {order.map((item) => {
-                return (
-                  <>
-                    <tbody key={item._id}>
-                      <tr className="border-b">
+              <tbody>
+                {order.map((item) => {
+                  return (
+                    <>
+                      <tr key={item._id} className="border-b">
                         <td className="py-3">{item._id}</td>
                         <td>{new Date(item._createdAt).toLocaleString()}</td>
                         <td>
@@ -107,7 +107,6 @@ const ProductOrderDetalis = () => {
                         </td>
                         <td>${item.sum}</td>
                         <td>
-                      
                           <div className="flex space-x-4">
                             <select className="border px-3 py-2 rounded-lg text-gray-600">
                               <option>Show All</option>
@@ -162,10 +161,10 @@ const ProductOrderDetalis = () => {
                             </td>
                           </tr>
                         ))}
-                    </tbody>
-                  </>
-                );
-              })}
+                    </>
+                  );
+                })}
+              </tbody>
             </table>
           </div>
         </div>
