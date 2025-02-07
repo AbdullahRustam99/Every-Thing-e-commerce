@@ -93,35 +93,33 @@ toast(`Faile to delete`,{type:"error"})
               </thead>
               {Products.map((item) => {
                 return (
-                  <>
-                    <tbody key={item._id}>
-                      <tr className="border-b" x-data="{ open: false }">
-                        <td className="py-3 gap-5 flex w-[270px]">
-                          <Image
-                            src={urlFor(item.imageUrl).url()}
-                            alt="img"
-                            width={60}
-                            height={60}
-                          />
-                          {item.productName}
-                        </td>
-                        <td className="py-3 w-[300px]">{item.category}</td>
-                        <td className="py-3  w-[100px]">{item.price}</td>
-                        <td className="py-3  w-[100px]">{item.inventory}</td>
-                        <td>
-                          
-                          <button
-                            onClick={() => {
-                              delet(item._id);
-                            }}
-                            className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </>
+                  <tbody key={item._id}>
+                    <tr className="border-b" x-data="{ open: false }">
+                      <td className="py-3 gap-5 flex w-[270px]">
+                        <Image
+                          src={urlFor(item.imageUrl).url()}
+                          alt="img"
+                          width={60}
+                          height={60}
+                        />
+                        {item.productName}
+                      </td>
+                      <td className="py-3 w-[300px]">{item.category}</td>
+                      <td className="py-3  w-[100px]">{item.price}</td>
+                      <td className="py-3  w-[100px]">{item.inventory}</td>
+                      <td>
+                        
+                        <button
+                          onClick={() => {
+                            delet(item._id);
+                          }}
+                          className="bg-blue-600 text-white font-semibold px-6 py-2 rounded-lg"
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
                 );
               })}
             </table>
