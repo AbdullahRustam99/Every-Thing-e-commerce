@@ -33,7 +33,7 @@ const Product = () => {
   "imageUrl": image.asset->url,
   description
 }`;
-  
+
   useEffect(() => {
     async function fetchData() {
       const product = await client.fetch(api);
@@ -43,18 +43,17 @@ const Product = () => {
     fetchData();
   }, []);
   console.log(Products);
- 
 
   const delet = async (productId: string) => {
     try {
-      await client.delete(productId)
+      await client.delete(productId);
       setProducts((items) => {
         return items.filter((item) => item._id !== productId);
-      })
-toast(`Product Deleted `,{type:"success"})
+      });
+      toast(`Product Deleted `, { type: "success" });
     } catch (error) {
-      console.log(error)
-toast(`Faile to delete`,{type:"error"})
+      console.log(error);
+      toast(`Faile to delete`, { type: "error" });
     }
   };
   return (
@@ -91,10 +90,14 @@ toast(`Faile to delete`,{type:"error"})
                   <th className="py-3  text-left text-gray-600"> Action</th>
                 </tr>
               </thead>
-              {Products.map((item) => {
-                return (
-                  <tbody key={item._id}>
-                    <tr className="border-b" x-data="{ open: false }">
+              <tbody>
+                {Products.map((item) => {
+                  return (
+                    <tr
+                      key={item._id}
+                      className="border-b"
+                      x-data="{ open: false }"
+                    >
                       <td className="py-3 gap-5 flex w-[270px]">
                         <Image
                           src={urlFor(item.imageUrl).url()}
@@ -108,7 +111,6 @@ toast(`Faile to delete`,{type:"error"})
                       <td className="py-3  w-[100px]">{item.price}</td>
                       <td className="py-3  w-[100px]">{item.inventory}</td>
                       <td>
-                        
                         <button
                           onClick={() => {
                             delet(item._id);
@@ -119,13 +121,13 @@ toast(`Faile to delete`,{type:"error"})
                         </button>
                       </td>
                     </tr>
-                  </tbody>
-                );
-              })}
+                  );
+                })}
+              </tbody>
             </table>
           </div>
         </div>
-        <ToastContainer position="bottom-right"/>
+        <ToastContainer position="bottom-right" />
       </div>
     </>
   );
