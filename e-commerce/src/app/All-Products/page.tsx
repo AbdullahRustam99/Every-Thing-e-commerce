@@ -9,6 +9,7 @@ import { HiMiniBars3CenterLeft } from "react-icons/hi2";
 import { useSearch } from "../Context/searchbarContex";
 import Card from "@/components/Card";
 import { urlFor } from "@/sanity/lib/image";
+
 interface Product {
   _id: string;
   productName: string;
@@ -20,6 +21,7 @@ interface Product {
   imageUrl: string;
   description: string;
 }
+
 const ProductDetails = () => {
   const { search } = useSearch();
   const api = `*[_type == "product"]{
@@ -37,6 +39,7 @@ const ProductDetails = () => {
   const [productData, setProductData] = useState<Product[]>([]);
   const [filteredProduct, setFilteredProduct] =
     useState<Product[]>(productData);
+  
   // for fetching data
   useEffect(() => {
     async function fetchData() {
@@ -47,11 +50,11 @@ const ProductDetails = () => {
     }
     fetchData();
   }, []);
+
   // for serching data
   useEffect(() => {
     if (search === "") {
       setFilteredProduct(productData);
-
       return;
     } else {
       const filteredData = productData.filter((product) => {
@@ -91,6 +94,7 @@ const ProductDetails = () => {
     setFilteredProduct(filteredData);
     console.log(filters);
   }
+
   if (filteredProduct == null || filteredProduct.length == 0) {
     return (
       <>

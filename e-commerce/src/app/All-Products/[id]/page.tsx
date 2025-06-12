@@ -10,6 +10,7 @@ import { useCart } from "@/app/Context/createContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
 
 interface Product {
   _id: number;
@@ -23,9 +24,11 @@ interface Product {
   description: string;
   quantity: number;
 }
-const ProductDetails = ({ params }: { params: { id: string } }) => {
+const ProductDetails = ({ params }: { params: { id: string; }; }) => {
+
   const { id } = params;
   const { addToCart } = useCart();
+
   const api = `*[_type == "product"]{
   _id,
   productName,
@@ -37,8 +40,10 @@ const ProductDetails = ({ params }: { params: { id: string } }) => {
   "imageUrl": image.asset->url,
   description
 }`;
-const router = useRouter()
+  
+  const router = useRouter();
   const [productData, setProductData] = useState<Product[]>([]);
+
   useEffect(() => {
     async function fetchData() {
       const product = await client.fetch(api);
@@ -52,22 +57,27 @@ const router = useRouter()
   const productItem = productData.find(
     (item: Product) => String(item._id) === String(id)
   );
+  
   console.log(productItem);
+
   const notify = (productName: string) => {
     toast(`${productName} added to cart sucessfully`, {
       type: "success",
     });
   };
+
   const outOfStock = (productName: string) => {
     toast(`${productName} is out of stock`, {
       type: "error",
     });
   };
+
   const warning = (productName: string) => {
     toast(`${productName} Please select quantity`, {
       type: "warning",
     });
   };
+
   if (!productItem) {
     return (
       <>
@@ -82,7 +92,6 @@ const router = useRouter()
     return (
       <>
         <Header />
-
         <div className="px-10 py-10 flex gap-10 md:gap-20 md:py-20 items-center justify-center flex-col lg:flex-row">
           <div>
             <Image
@@ -137,19 +146,23 @@ const router = useRouter()
               <button
                 className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
                 onClick={() => {
-                  if (quantity === 0) {
-                    warning(productItem.productName);
+                  if (cookies().get("IsLogin")?.value == "0") {
+                    router.push("/Sing");
                   } else {
-                    router.push("/All-Products")
-                    addToCart({ ...productItem }, quantity);
-                    notify(productItem.productName);
+                    if (quantity === 0) {
+                      warning(productItem.productName);
+                    } else {
+                      router.push("/All-Products");
+                      addToCart({ ...productItem }, quantity);
+                      notify(productItem.productName);
+                    }
                   }
                 }}
               >
                 Add to Cart
               </button>
             </div>
-            <ToastContainer position="bottom-right"/>
+            <ToastContainer position="bottom-right" />
           </div>
         </div>
 
@@ -160,4 +173,4 @@ const router = useRouter()
 };
 export default ProductDetails;
 
-// function toast removed to resolve import conflict
+

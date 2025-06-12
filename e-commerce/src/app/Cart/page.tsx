@@ -24,42 +24,12 @@ const ShoppingCart = () => {
   const notify = (productName: string) => {
     toast(`${productName} Was removed from cart`, { type: "warning" });
   };
+
   const empty = () => {
     toast(`Add Product to Checkout`, { type:"warning" });
   }
-  if (cart == null || cart.length === 0) {
-    return (
-      <>
-        <Header />
-        <h2 className="text-3xl font-bold ml-20 mb-6">Bag</h2>
-        <div className="lg:flex  lg:justify-evenly  bg-white p-8 max-w-[1440px]">
-          <div className="text-gray-500 flex justify-evenly flex-col ">
-            <h1 className="text-3xl">Your Cart is Empty!!!!</h1>
-          </div>
-          <div className="lg:w-[344px] w-full">
-            <h3 className="text-xl font-semibold pb-4">Summary</h3>
-            <div className="flex justify-between mb-2">
-              <p className="text-gray-500">Subtotal</p>
-              <p className="text-lg font-bold">$ {sum}</p>
-            </div>
-            <div className="flex justify-between mb-2">
-              <p className="text-gray-500">Estimated Delivery & Handling</p>
-              <p className="text-lg font-bold">Free</p>
-            </div>
-            <div className="flex justify-between mb-4">
-              <p className="text-gray-500">Total</p>
-              <p className="text-lg font-bold">$ {sum}</p>
-            </div>
-            <button className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white">
-              Member Checkout
-            </button>
-          </div>
-        </div>
 
-        <Footer />
-      </>
-    );
-  } else {
+  if (cart == null || cart.length === 0) {
     return (
       <>
         <Header />
@@ -102,7 +72,7 @@ const ShoppingCart = () => {
                     </div>
                   </div>
                   <p className="text-lg font-bold">$ {item.price}</p>
-                </div>
+                </div> 
               );
             })}
           </div>

@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
 import React, { useState } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Logo from "@/img/logo.png";
 import Image from "next/image";
-import Link from "next/link"; 
+import Link from "next/link";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,13 +28,13 @@ const formSchema = z.object({
 });
 
 const Login = () => {
-  const router = useRouter()
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-  const [error ,seterror] = useState("")
+  const [error, seterror] = useState("");
 
-   async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
       const api = await fetch("/api/Auth/Login", {
         method: "Post",
@@ -45,11 +45,11 @@ const Login = () => {
         credentials: "include",
       });
       if (api.ok) {
-        console.log("hellow")
-        router.push("/")
+        console.log("hellow");
+        router.push("/");
       } else {
         const response = await api.json();
-        seterror(response)
+        seterror(response);
         console.log(response);
       }
     } catch (error) {
@@ -102,7 +102,7 @@ const Login = () => {
                   </FormItem>
                 )}
               />
-              <h1 className="text-red-700">{ error}</h1>
+              <h1 className="text-red-700">{error}</h1>
               <Button
                 className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
                 type="submit"

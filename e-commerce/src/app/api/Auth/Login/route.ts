@@ -9,17 +9,15 @@ export async function POST(request: NextRequest) {
 
     console.log("EMAIL", email, "PASSOWERD", password);
 
-    if (email === "abc@gmail.com" && password === "123456") {
-      cookieStore.set("IsLogin", "1", {httpOnly:true});
-      
+    if (email === cookieStore.get("Email")?.value  && password === cookieStore.get("Password")?.value) {
+      cookieStore.set("IsLogin", "1", {httpOnly: true});
       return NextResponse.json("Login Successful !");
 
     } else {
-
       cookieStore.set("IsLogin", "0", { httpOnly: true });
-       
       return NextResponse.json("Invalid Email or Password !" , {status: 401} );
     }
+    
   } catch (error) {
     return NextResponse.json(error);
   }

@@ -9,11 +9,14 @@ export async function POST(request: NextRequest) {
 
     console.log("EMAIL", email, "PASSOWERD", password);
 
-      cookieStore.set("Email", email , {httpOnly:true});
-      
-      cookieStore.set("Password", password, { httpOnly: true });
-      
-        
+    cookieStore.set("Email", email, { httpOnly: true });
+
+    cookieStore.set("Password", password, { httpOnly: false });
+
+    cookieStore.set("IsLogin", "1", { httpOnly: true });
+
+    return NextResponse.json("SUCCesfully added");
+    
   } catch (error) {
     return NextResponse.json(error);
   }

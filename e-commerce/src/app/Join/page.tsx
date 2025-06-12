@@ -1,7 +1,7 @@
-"use client"
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer"
+import Footer from "@/components/Footer";
 import Logo from "@/img/logo.png";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,8 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import router from "next/router";
-
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -27,42 +26,42 @@ const formSchema = z.object({
   firstName: z.string().nonempty({ message: "First Name is required" }),
   lastName: z.string().nonempty({ message: "Last Name is required" }),
   dob: z.string().regex(/^\d{2}-\d{2}-\d{4}$/, {
-    message: "Date of Birth must be in the format YYYY-MM-DD",
+    message: "Date of Birth must be in the format DD-MM-YYYY",
   }),
   gender: z.enum(["male", "female"], { message: "Gender is required" }),
   emailUpdates: z.boolean().optional(),
 });
 
 const NikeMember = () => {
-    const [error ,seterror] = useState("")
-  
+  const router = useRouter()
+  const [error, seterror] = useState("");
+
   const form = useForm<z.infer<typeof formSchema>>({
-      resolver: zodResolver(formSchema),
-    });
-  
-    async function onSubmit(data: z.infer<typeof formSchema>) {
-       try {
-         const api = await fetch("/api/Auth/Singup", {
-           method: "Post",
-           headers: {
-             "Content-Type": "application/json",
-           },
-           body: JSON.stringify(data),
-           credentials: "include",
-         });
-   
-         if (api.ok) {
-           console.log("hellow")
-           router.push("/")
-         } else {
-           const response = await api.json();
-           seterror(response)
-           console.log(response);
-         }
-       } catch (error) {
-         console.log(error, "Error");
-       }
-     }
+    resolver: zodResolver(formSchema),
+  });
+
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      const api = await fetch("/api/Auth/Singup", {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: "include",
+      });
+      if (api.ok) {
+        console.log("hellow");
+        router.push("/");
+      } else {
+        const response = await api.json();
+        seterror(response);
+        console.log(response);
+      }
+    } catch (error) {
+      console.log(error, "Error");
+    }
+  }
   return (
     <>
       <Header />
@@ -203,7 +202,7 @@ const NikeMember = () => {
               </button>
             </form>
           </Form>
-        
+
           <p className="text-sm text-gray-500 mt-4">
             Already a Member?
             <Link href={"/Singin"} className="text-blue-500">
