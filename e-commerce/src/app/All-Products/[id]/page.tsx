@@ -10,7 +10,6 @@ import { useCart } from "@/app/Context/createContext";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation";
-import { cookies } from "next/headers";
 
 interface Product {
   _id: number;
@@ -146,9 +145,6 @@ const ProductDetails = ({ params }: { params: { id: string; }; }) => {
               <button
                 className="py-[8px] px-[22px] bg-[#000000]  rounded-[400px] text-white"
                 onClick={() => {
-                  if (cookies().get("IsLogin")?.value == "0") {
-                    router.push("/Sing");
-                  } else {
                     if (quantity === 0) {
                       warning(productItem.productName);
                     } else {
@@ -157,7 +153,7 @@ const ProductDetails = ({ params }: { params: { id: string; }; }) => {
                       notify(productItem.productName);
                     }
                   }
-                }}
+                }
               >
                 Add to Cart
               </button>
